@@ -6,21 +6,26 @@ import h5py
 import pickle
 import time
 
-dense_layers = [0, 1, 2]
-layer_sizes = [32, 64, 128]
+dense_layers = [0]
+layer_sizes = [128]
 conv_layers = [3]
 
-BATCH_SIZE = 16
-EPOCHS = 10
-VALIDATION_SPLIT = 0.3
+BATCH_SIZE = 32
+EPOCHS = 25
+VALIDATION_SPLIT = 0.5
 
 gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 
+'''train_X = pickle.load(open("train_X.pickle", "rb"))
+train_y = pickle.load(open("train_y.pickle", "rb"))
+test_X = pickle.load(open("test_X.pickle", "rb"))
+test_y = pickle.load(open("test_y.pickle", "rb"))'''
 X = pickle.load(open("X.pickle", "rb"))
 y = pickle.load(open("y.pickle", "rb"))
 
 X = X/255.0
+#test_X - test_X/255.0
 
 for dense_layer in dense_layers:
     for layer_size in layer_sizes:
@@ -55,6 +60,6 @@ for dense_layer in dense_layers:
                           optimizer=opt,
                           metrics=['accuracy'])
 
-            model.fit(X,y, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_split=VALIDATION_SPLIT, callbacks=[tensorboard])
+            model.fit(X,y, batch_size=BATCH_SIZE, epochs=EPOCHS, validation_split=VALIDATION_SPLIT, callbacks=[tensorboard], shuffle=True)
 
             model.save(NAME)
